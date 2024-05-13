@@ -27,3 +27,5 @@
 #define SYS_mutex_lock 26
 #define SYS_mutex_unlock 27
 #define SYS_dmesg 28
+#define SYS_toggle_class_log 29
+#define SYS_set_stop_ticks 30

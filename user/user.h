@@ -31,6 +31,8 @@ int mutex_destroy(int);
 int mutex_lock(int);
 int mutex_unlock(int);
 int dmesg(uint64, int);
+int toggle_class_log(int, int);
+int set_stop_ticks(int);
 
 // ulib.c
 int stat(const char*, struct stat*);

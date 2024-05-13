@@ -294,6 +294,8 @@ virtio_disk_rw(struct buf *b, int write)
 void
 virtio_disk_intr()
 {
+  pr_msg(INTERRUPT, "<INTERRUPT> [num=%d, name=virtio]", VIRTIO0_IRQ);
+
   acquire(&disk.vdisk_lock);
 
   // the device won't raise another interrupt until we tell it

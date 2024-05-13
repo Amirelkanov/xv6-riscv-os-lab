@@ -6,6 +6,7 @@
 #include "proc.h"
 #include "defs.h"
 #include "elf.h"
+#include "dmsgbuff.h"
 
 static int loadseg(pde_t *, uint64, struct inode *, uint, uint);
 
@@ -32,7 +33,7 @@ exec(char *path, char **argv)
   struct proc *p = myproc();
 
   acquire(&p->lock);
-  pr_msg("pid=%d, name=%s", p->pid, path);
+  pr_msg(EXEC, "<EXEC> Executed [name=%s] in process [pid=%d]", path, p->pid);
   release(&p->lock);
 
   begin_op();

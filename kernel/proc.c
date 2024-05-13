@@ -8,6 +8,7 @@
 #include "defs.h"
 #include "procinfo.h"
 #include "mutex.h"
+#include "dmsgbuff.h"
 
 struct cpu cpus[NCPU];
 
@@ -480,6 +481,9 @@ scheduler(void)
         // Switch to chosen process.  It is the process's job
         // to release its lock and then reacquire it
         // before jumping back to us.
+        pr_msg(SWITCH, "<SWITCH> to [pid=%d, name=%s]; Dumps: [trapframe=%p], [context=%p]",
+               p->pid, p->name, &p->trapframe, &c->context);
+
         p->state = RUNNING;
         c->proc = p;
         swtch(&c->context, &p->context);
