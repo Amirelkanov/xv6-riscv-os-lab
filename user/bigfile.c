@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
         }
 
         if (write(fd, buff, bytes_to_write) != bytes_to_write) {
-            fprintf(2, "Error while writing");
+            fprintf(2, "Error while writing.\n");
             return_code = 1;
             goto end;
         }
@@ -59,14 +59,14 @@ int main(int argc, char **argv) {
     while (i > 0) {
         uint64 bytes_to_read = get_rw_bytes(i);
         if (read(fd, buff, bytes_to_read) != bytes_to_read) {
-            fprintf(2, "Error while reading");
+            fprintf(2, "Error while reading.\n");
             return_code = 1;
             goto end;
         }
 
         for (int j = 0; j < bytes_to_read / sizeof(uint64); j++) {
             if (rand_int != buff[j]) {
-                fprintf(2, "Mismatch. Expected: %llu, Got: %llu.", rand_int, buff[j]);
+                fprintf(2, "Mismatch. Expected: %llu, Got: %llu.\n", rand_int, buff[j]);
                 return_code = 2;
                 goto end;
             }
