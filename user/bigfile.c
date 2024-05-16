@@ -76,7 +76,8 @@ int main(int argc, char **argv) {
         i -= bytes_to_read / sizeof(uint64);
     }
 
-    printf("Ok\n");
+    printf("Everything done perfectly!\nCreated temp file of %d uint64 numbers generated randomly from seed=%d\n",
+           filesize, seed);
 
     end:
     close(fd);
