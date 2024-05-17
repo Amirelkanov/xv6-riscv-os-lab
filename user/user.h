@@ -31,6 +31,7 @@ int mutex_destroy(int);
 int mutex_lock(int);
 int mutex_unlock(int);
 int dmesg(uint64, int);
+int vmprint(void);
 
 // ulib.c
 int stat(const char*, struct stat*);
