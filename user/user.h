@@ -32,6 +32,7 @@ int mutex_lock(int);
 int mutex_unlock(int);
 int dmesg(uint64, int);
 int vmprint(void);
+int pgaccess(void*, int, char*);
 
 // ulib.c
 int stat(const char*, struct stat*);

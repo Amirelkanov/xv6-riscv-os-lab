@@ -109,6 +109,7 @@ extern uint64 sys_mutex_lock(void);
 extern uint64 sys_mutex_unlock(void);
 extern uint64 sys_dmesg(void);
 extern uint64 sys_vmprint(void);
+extern uint64 sys_pgaccess(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -142,6 +143,7 @@ static uint64 (*syscalls[])(void) = {
 [SYS_mutex_unlock] sys_mutex_unlock,
 [SYS_dmesg] sys_dmesg,
 [SYS_vmprint] sys_vmprint,
+[SYS_pgaccess] sys_pgaccess,
 };
 
 void
