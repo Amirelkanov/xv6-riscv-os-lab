@@ -402,6 +402,7 @@ bmap(struct inode *ip, uint bn) {
     return addr;
   }
 
+  bn -= NINDIRECT; // Сдвигаемся к двойному индиректу
   if (bn < NDOUBLE_INDIRECT) { // Если попали в двойной косвенный блок
     // Load double-indirect block, allocating if necessary.
     if ((addr = ip->addrs[NDIRECT + 1]) == 0) {
