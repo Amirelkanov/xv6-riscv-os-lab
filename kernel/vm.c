@@ -434,6 +434,7 @@ void print_all_pte_flags(pte_t pte) {
   print_pte_flag(pte, PTE_W, "W", &flag_cnt);
   print_pte_flag(pte, PTE_X, "X", &flag_cnt);
   print_pte_flag(pte, PTE_U, "U", &flag_cnt);
+  print_pte_flag(pte, PTE_A, "A", &flag_cnt);
   if (flag_cnt == 0) printf("NO FLAGS");
   printf("]");
 }

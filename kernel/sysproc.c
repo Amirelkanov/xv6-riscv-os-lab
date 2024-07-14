@@ -92,27 +92,23 @@ int sys_ps_listinfo(void) {
   return ps_listinfo(plist, lim);
 }
 
-int sys_pgaccess(uint64 first_user_page_addr, int num_of_pages, uint64 res_buff_addr) {
-  argaddr(0, &first_user_page_addr);
-  argint(1, &num_of_pages);
-  argaddr(2, &res_buff_addr);
+int sys_pgaccess(uint64 addr, int len) {
+  argaddr(0, &addr);
+  argint(1, &len);
 
   pagetable_t pagetable = myproc()->pagetable;
+  int is_accessed = 0;
 
-  char is_accessed[num_of_pages + 1];
-  is_accessed[num_of_pages] = 0; // Мб эта строчка не нужна, т.к. вроде бы как char[] заполняется '\0', но лучше перестраховаться
+  if (len < 0 || addr + len >= MAXVA) return -1;
 
-  for (int i = 0; i < num_of_pages; i++) {
-    pte_t *pte = walk(pagetable, first_user_page_addr + PGSIZE * i, 0);
+  for (int va = PGROUNDDOWN(addr); va < addr + len; va += PGSIZE) {
+    pte_t *pte = walk(pagetable, va, 0);
+    if (pte == 0) return -1;
     if (*pte & PTE_A) {
-      is_accessed[i] = '1';
+      is_accessed = 1;
       *pte &= ~PTE_A; // clear PTE_A bits
-    } else {
-      is_accessed[i] = '0';
     }
   }
 
-  if (copyout(pagetable, res_buff_addr, is_accessed, sizeof(is_accessed)) < 0) return 1;
-
-  return 0;
+  return is_accessed;
 }
