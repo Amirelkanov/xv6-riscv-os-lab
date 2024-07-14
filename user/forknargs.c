@@ -1,7 +1,7 @@
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "user/user.h"
-#include "lab2_checkers.c"
+/*#include "lab2_checkers.c"
 
 const int BUFF_SIZE = 10;
 
@@ -17,10 +17,10 @@ void child_proc(int *p) {
 
     close(p[0]);
     exit(0);
-}
+}*/
 
 int main(int argc, char **argv) {
-    int p[2]; // [rd, wd]
+    /*int p[2]; // [rd, wd]
     pipe(p);
 
     int pid = fork();
@@ -48,6 +48,6 @@ int main(int argc, char **argv) {
     }
 
     close(p[1]);
-    wait((int *) 0);
+    wait((int *) 0);*/
     exit(0);
 }

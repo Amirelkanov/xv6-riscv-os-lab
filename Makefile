@@ -147,6 +147,7 @@ UPROGS=\
 	$U/_mutex_test\
 	$U/_dmesg_test\
 	$U/_dmesg\
+	$U/_bigfile\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
