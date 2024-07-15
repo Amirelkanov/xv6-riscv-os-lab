@@ -22,7 +22,7 @@ enum EVENT_CLASS get_event_class_by_char(char ev_class_chr) {
 }
 
 /* Включает/отключает соответствующие классы логирования:
- * chlog [-/+][EVENT CLASS 1] [-/+][EVENT CLASS 2] ...
+ * chlog [-/+][EVENT CLASS 1] [-/+][EVENT CLASS 2] ...,
  где event class'ы записываются следующим образом:
  * c - SYSCALL
  * i - INTERRUPT
@@ -30,7 +30,6 @@ enum EVENT_CLASS get_event_class_by_char(char ev_class_chr) {
  * e - EXEC
 */
 int main(int argc, char **argv) {
-
   if (argc < 2) raise_err("Invalid number of arguments.\n");
   for (int i = 1; i < argc; i++) {
     if (strlen(argv[i]) != 2) raise_err("Invalid argument.\n");
