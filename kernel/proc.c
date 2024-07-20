@@ -753,3 +753,46 @@ int ps_listinfo(procinfo_t *plist, int lim) {
     return active_proc_cnt;
 }
 
+void print_pte_flag(pte_t pte, uint64 flag, char *flag_name, uint *flag_cnt) {
+    if (pte & flag) {
+        if ((*flag_cnt)++ > 0) printf("|");
+        printf(flag_name);
+    }
+}
+
+void print_all_pte_flags(pte_t pte) {
+    uint flag_cnt = 0;
+    printf("[");
+    print_pte_flag(pte, PTE_V, "V", &flag_cnt);
+    print_pte_flag(pte, PTE_R, "R", &flag_cnt);
+    print_pte_flag(pte, PTE_W, "W", &flag_cnt);
+    print_pte_flag(pte, PTE_X, "X", &flag_cnt);
+    print_pte_flag(pte, PTE_U, "U", &flag_cnt);
+    print_pte_flag(pte, PTE_A, "A", &flag_cnt);
+    if (flag_cnt == 0) printf("NO FLAGS");
+    printf("]");
+}
+
+void vmprint(pagetable_t pagetable, int level) {
+    if (level == 1) printf("page table %p\n", pagetable);
+    for (int i = 0; i < 512; i++) {
+        pte_t pte = pagetable[i];
+        if (pte & PTE_V) {
+            for (int i = level; i > 0; i--) printf(" ..");
+            uint64 pa = PTE2PA(pte);
+
+            printf("%d: pte %p pa %p ", i, pte, pa);
+            print_all_pte_flags(pte);
+            printf("\n");
+
+            if ((pte & PTE_V) && (pte & (PTE_R | PTE_W | PTE_X)) == 0) { // Child
+                vmprint((pagetable_t) pa, level + 1);
+            }
+        }
+    }
+}
+
+int sys_vmprint(void) {
+    vmprint(myproc()->pagetable, 1);
+    return 0;
+}
