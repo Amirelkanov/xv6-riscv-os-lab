@@ -3,6 +3,7 @@
 #include "kernel/stat.h"
 #include "user/user.h"
 #include "kernel/riscv.h"
+#include "kernel/dmsgbuff.h"
 #include "user/check_helpers.c"
 
 void test_correct_dmesg(void) {
@@ -28,6 +29,11 @@ void test_null_buff_pointer(void) {
 }
 
 int main() {
+    for (enum EVENT_CLASS curr_class = SYSCALL; curr_class < NEVENTCLASSES; curr_class++) {
+        toggle_class_log(curr_class, 1);
+    }
+    set_stop_ticks(100);
+
     // Тут я не все случаи покрыл: copyout может ныть еще в 3 местах, но чисто для быстрой проверки сойдет
     printf("===== Dmesg tests started =====\n");
     test_correct_dmesg();
