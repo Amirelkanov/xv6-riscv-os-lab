@@ -9,11 +9,18 @@
 #include "dmsgbuff.h"
 
 dmsg_buff_t dmsg_buff;
+ev_classes_logger_t ev_classes_logger;
+
 char digits[] = "0123456789abcdef";
 
 void dmsg_buff_init(void) {
     dmsg_buff.head = dmsg_buff.tail = 0;
     initlock(&dmsg_buff.lock, "Diag_msg_buff_lock");
+}
+
+void ev_classes_log_init(void) {
+    initlock(&ev_classes_logger.lock, "ev_classes_logger_lock");
+    memset(ev_classes_logger.enabled_classes, 0, NEVENTCLASSES * sizeof(short));
 }
 
 void putb(char b) { // Считаем, что у нас нормальная система и чар весит 1 байт
@@ -53,9 +60,22 @@ void pr_msg_ptr(uint64 x) {
         putb(digits[x >> (sizeof(uint64) * 8 - 4)]);
 }
 
-void pr_msg(const char *fmt, ...) {
+int pr_msg(enum EVENT_CLASS event_class, const char *fmt, ...) {
     if (fmt == 0)
         panic("null fmt");
+
+    int curr_ticks = ticks;
+
+    acquire(&ev_classes_logger.lock);
+    if (ev_classes_logger.enabled_classes[event_class] == 0) {
+        release(&ev_classes_logger.lock);
+        return -2;
+    }
+    if (ev_classes_logger.stop_ticks < curr_ticks) {
+        release(&ev_classes_logger.lock);
+        return -3;
+    }
+    release(&ev_classes_logger.lock);
 
     va_list ap;
     int i, c;
@@ -63,11 +83,7 @@ void pr_msg(const char *fmt, ...) {
     acquire(&dmsg_buff.lock);
 
     putb('[');
-
-    acquire(&tickslock);
-    pr_msg_int(ticks, 10, 1);
-    release(&tickslock);
-
+    pr_msg_int(curr_ticks, 10, 1);
     putb(']');
     putb(' ');
 
@@ -112,6 +128,8 @@ void pr_msg(const char *fmt, ...) {
 
     putb('\n');
     release(&dmsg_buff.lock);
+
+    return 0;
 }
 
 
@@ -158,5 +176,34 @@ int sys_dmesg(void) {
     }
 
     release(&dmsg_buff.lock);
+    return 0;
+}
+
+int sys_toggle_class_log(void) {
+    int event_class, on_off;
+
+    argint(0, &event_class);
+    argint(1, &on_off);
+
+    if (event_class >= NEVENTCLASSES || event_class < 0) return -1;
+    if (on_off > 1 || on_off < 0) return -2;
+
+    acquire(&ev_classes_logger.lock);
+    ev_classes_logger.enabled_classes[event_class] = on_off;
+    release(&ev_classes_logger.lock);
+    return 0;
+}
+
+int sys_set_stop_ticks(void) {
+    int query_ticks;
+    argint(0, &query_ticks);
+
+    int curr_ticks = ticks;
+    if (query_ticks < curr_ticks) return -1;
+
+    acquire(&ev_classes_logger.lock);
+    ev_classes_logger.stop_ticks = curr_ticks + query_ticks;
+    release(&ev_classes_logger.lock);
+
     return 0;
 }

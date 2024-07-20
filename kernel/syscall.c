@@ -108,6 +108,8 @@ extern uint64 sys_mutex_destroy(void);
 extern uint64 sys_mutex_lock(void);
 extern uint64 sys_mutex_unlock(void);
 extern uint64 sys_dmesg(void);
+extern uint64 sys_toggle_class_log(void);
+extern uint64 sys_set_stop_ticks(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -140,6 +142,8 @@ static uint64 (*syscalls[])(void) = {
 [SYS_mutex_lock] sys_mutex_lock,
 [SYS_mutex_unlock] sys_mutex_unlock,
 [SYS_dmesg] sys_dmesg,
+[SYS_toggle_class_log] sys_toggle_class_log,
+[SYS_set_stop_ticks] sys_set_stop_ticks,
 };
 
 void
@@ -150,6 +154,21 @@ syscall(void)
 
   num = p->trapframe->a7;
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
+    char* syscalls_names[] = {
+            "fork", "exit", "wait",
+            "pipe", "read", "kill",
+            "exec", "fstat", "chdir",
+            "dup", "getpid", "sbrk",
+            "sleep", "uptime", "open",
+            "write","mknod", "unlink",
+            "link", "mkdir", "close",
+            "add", "ps_listinfo", "mutex_create",
+            "mutex_destroy", "mutex_lock", "mutex_unlock",
+            "dmesg", "toggle_class_log", "set_stop_ticks"};
+
+    pr_msg(SYSCALL, "<SYSCALL> Process [pid=%d, name=%s] called syscall [num=%d, name=%s]",
+           p->pid, p->name, num, syscalls_names[num - 1]);
+
     // Use num to lookup the system call function for num, call it,
     // and store its return value in p->trapframe->a0
     p->trapframe->a0 = syscalls[num]();

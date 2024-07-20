@@ -175,6 +175,8 @@ uartgetc(void)
 void
 uartintr(void)
 {
+  pr_msg(INTERRUPT, "<INTERRUPT> [num=%d, name=UART]", UART0_IRQ);
+
   // read and process incoming characters.
   while(1){
     int c = uartgetc();

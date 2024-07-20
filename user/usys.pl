@@ -43,3 +43,5 @@ entry("mutex_destroy");
 entry("mutex_lock");
 entry("mutex_unlock");
 entry("dmesg");
+entry("toggle_class_log");
+entry("set_stop_ticks");

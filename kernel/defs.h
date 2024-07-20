@@ -1,4 +1,5 @@
 #include "procinfo.h"
+#include "dmsgbuff.h"
 
 struct buf;
 struct context;
@@ -68,10 +69,11 @@ void            kinit(void);
 
 // dmsgbuff.c
 void dmsg_buff_init(void);
+void ev_classes_log_init(void);
 void putb(char);
 void pr_msg_int(int, int, int);
 void pr_msg_ptr(uint64);
-void pr_msg(const char *fmt, ...);
+int pr_msg(enum EVENT_CLASS, const char *fmt, ...);
 
 // log.c
 void            initlog(int, struct superblock*);

@@ -29,6 +29,7 @@ main()
     fileinit();      // file table
     mutexinit();     // mutex table
     dmsg_buff_init(); // diag msg buff
+    ev_classes_log_init(); // event classes logger init
     virtio_disk_init(); // emulated hard disk
     userinit();      // first user process
     __sync_synchronize();

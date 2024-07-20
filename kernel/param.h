@@ -17,3 +17,5 @@
 #define NDMSGPAGE    2  // num of pages for diag msg buff
 
 #define DIAG_MSG_BUFF_SIZE (NDMSGPAGE * PGSIZE) // full size of diag msg buff
+
+#define NEVENTCLASSES  4  // num of event classes
