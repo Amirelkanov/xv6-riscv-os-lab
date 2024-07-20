@@ -43,3 +43,5 @@ entry("mutex_destroy");
 entry("mutex_lock");
 entry("mutex_unlock");
 entry("dmesg");
+entry("vmprint");
+entry("pgaccess");
