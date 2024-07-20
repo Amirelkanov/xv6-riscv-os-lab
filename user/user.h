@@ -31,9 +31,12 @@ int mutex_destroy(int);
 int mutex_lock(int);
 int mutex_unlock(int);
 int dmesg(uint64, int);
+int symlink(char*, char*);
+int readlink(char*, char*);
 
 // ulib.c
 int stat(const char*, struct stat*);
+int lstat(const char*, struct stat*);
 char* strcpy(char*, const char*);
 void *memmove(void*, const void*, int);
 char* strchr(const char*, char c);

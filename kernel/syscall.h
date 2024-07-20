@@ -27,3 +27,5 @@
 #define SYS_mutex_lock 26
 #define SYS_mutex_unlock 27
 #define SYS_dmesg 28
+#define SYS_symlink 29
+#define SYS_readlink 30
