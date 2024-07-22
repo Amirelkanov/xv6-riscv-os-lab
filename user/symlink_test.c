@@ -173,23 +173,23 @@ void print_dir_structure(char *dir, char *ls_path)
     else wait(0);
 }
 
-void print_dirs()
+void print_test_dirs()
 {
-    printf("\n===== Directory structure =====\n\n");
+    printf("\n===== Test directories structure =====\n\n");
     print_dir_structure("/", "ls");
     print_dir_structure("/d1", "../ls");
     print_dir_structure("/d1/d2", "../../ls");
     print_dir_structure("/d1/d2/lns", "../../../ls");
     print_dir_structure("/d1/d2/lns/ln1", "../../../../ls");
     print_dir_structure("/d1/d2/lns/ln1/ln2", "../../../../../ls");
-    printf("\n===== Directory structure finished =====\n");
+    printf("\n===== Test directories structure finished =====\n");
 }
 
 int main()
 {
     preprocess();
     run_tests();
-    print_dirs();
+    print_test_dirs();
     postprocess();
 
     exit(0);
