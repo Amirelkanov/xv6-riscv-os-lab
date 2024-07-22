@@ -328,7 +328,54 @@ sys_open(void)
       return -1;
     }
     ilock(ip);
-    if(ip->type == T_DIR && omode != O_RDONLY){
+
+    if (!(omode & O_NOFOLLOW)) { // Если разрешено бегать рекурсивно по символическим ссылкам, бегаем
+      int rec_depth = 0;
+      while (ip->type == T_SYMLINK) {
+        if (++rec_depth > MAXRECDEPTH) {
+          iunlock(ip);
+          end_op();
+          return -1;
+        }
+
+        char relative_path[MAXPATH];
+        memset(relative_path, 0, MAXPATH);
+
+        // Читаем цель символической ссылки в relative_path, и если не смогли, то красиво завершаемся
+        if (readi(ip, 0, (uint64) relative_path, 0, MAXPATH) < 0) {
+          iunlock(ip);
+          end_op();
+          return -1;
+        }
+        iunlock(ip);
+
+        if (relative_path[0] == '/') { // Если, на самом деле, это абсолютный путь
+          safestrcpy(path, relative_path, MAXPATH);
+        } else {
+          // Срезаем путь до последнего слеша
+          int path_size_until_last_slash = strlen(path);
+          while (path_size_until_last_slash > 0 && path[path_size_until_last_slash - 1] != '/') path_size_until_last_slash--;
+                
+          // Если путь слишком длинный, возвращаем ошибку
+          if ((path_size_until_last_slash + strlen(relative_path) + 1) > MAXPATH) {
+            end_op();
+            return -1;
+          }
+
+          // Припысываем относительный путь к абсолютному
+          memmove(path + path_size_until_last_slash, relative_path, strlen(relative_path) + 1);
+        }
+
+        if ((ip = namei(path)) == 0) { // Если не нашли inode по такому пути
+          end_op();
+          return -1;
+        }
+
+        ilock(ip);
+      }
+    }
+
+    if(ip->type == T_DIR && omode != O_RDONLY && omode != O_NOFOLLOW) {
       iunlockput(ip);
       end_op();
       return -1;
@@ -369,6 +416,44 @@ sys_open(void)
 
   return fd;
 }
+
+uint64 sys_symlink(void) {
+  char target[MAXPATH], filename[MAXPATH];
+  struct inode* ip;
+
+  if (argstr(0, target, MAXPATH) < 0 || argstr(1, filename, MAXPATH) < 0) return -1;
+  begin_op();
+  if ((ip = create(filename, T_SYMLINK, 0, 0)) == 0) {
+    end_op();
+    return -1;
+  }
+  ip->type = T_SYMLINK;
+  writei(ip, 0, (uint64) target, 0, strlen(target));
+  iunlockput(ip);
+  end_op();
+  return 0;
+}
+
+uint64 sys_readlink(void) {
+  char filename[MAXPATH], *buff;
+  if (argstr(0, filename, MAXPATH) < 0) return -1;
+  struct inode* ip;
+  uint64 uint_buff_addr;
+
+  argaddr(1, &uint_buff_addr);
+  buff = (char *) uint_buff_addr;
+  begin_op();
+  if ((ip = namei(filename)) == 0) {
+    end_op();
+    return -1;
+  }
+  ilock(ip);
+  readi(ip, 1, (uint64) buff, 0, ip->size);
+  iunlock(ip);
+  end_op();
+  return 0;
+}
+
 
 uint64
 sys_mkdir(void)

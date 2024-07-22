@@ -17,3 +17,6 @@
 #define NDMSGPAGE    2  // num of pages for diag msg buff
 
 #define DIAG_MSG_BUFF_SIZE (NDMSGPAGE * PGSIZE) // full size of diag msg buff
+
+#define MAXPATH      128   // maximum file path name
+#define MAXRECDEPTH  40    // maximum symlink recursion depth
